@@ -1,1 +1,253 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rui Wang</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@300;400&family=Crimson+Text:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-weight: 300;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 40px;
+        }
+
+        .name {
+            font-family: 'EB Garamond', 'Garamond', serif;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 1.1em;
+            font-weight: 300;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .nav a.active {
+            text-decoration: underline;
+        }
+
+        .profile-section {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 50px;
+            align-items: flex-start;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 120px;
+        }
+
+        .profile-photo {
+            width: 300px;
+            height: 300px;
+            border-radius: 8px;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .bio {
+            flex: 1;
+        }
+
+        .bio p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: 300;
+        }
+
+        .contact-links {
+            margin-top: 20px;
+        }
+
+        .contact-links a {
+            text-decoration: underline;
+            color: #333;
+            margin-right: 15px;
+        }
+
+        .bio a {
+            color: #333;
+            text-decoration: underline;
+        }
+
+        .bio a:hover {
+            text-decoration: none;
+        }
+
+        .contact-links a:last-child {
+            margin-right: 0;
+        }
+
+        .section-title {
+            font-family: 'EB Garamond', 'Garamond', serif;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .papers-list {
+            list-style: none;
+        }
+
+        .paper-item {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .paper-date {
+            font-weight: 400;
+            color: #555;
+            margin-bottom: 3px;
+            font-size: 0.9em;
+        }
+
+        .paper-title {
+            font-size: 1em;
+            margin-bottom: 0;
+            display: inline;
+        }
+
+        .paper-title a {
+            color: #2c5aa0;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .paper-title a:hover {
+            color: #1a3f7a;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .nav {
+                gap: 20px;
+            }
+
+            .profile-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-photo {
+                align-self: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1 class="name">Rui Wang</h1>
+        <nav class="nav">
+            <a href="#" class="active">Home</a>
+            <a href="#papers">Publications</a>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="profile-section">
+            <div class="profile-photo">
+                <img src="assets/images/photo.jpg" alt="Rui Wang" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+            </div>
+            <div class="content-wrapper">
+                <div class="bio">
+                    
+
+                    <p>I'm an AI researcher at <a href="https://yutori.com/">Yutori</a>.</p>
+                    <p>I'm currently working on building AI agents via mid-training and reinforcement learning.</p>
+                    <p>Previously, I was at <a href="https://ai.meta.com/">Meta GenAI</a> where I was the post-training lead of <a href="https://arxiv.org/abs/2407.21783">LLaMA 3</a> multimodal and co-tech lead of <a href="https://arxiv.org/pdf/2309.15807">Emu</a>. Before that, I worked on large-scale object detection at <a href="https://ai.meta.com/">Meta FAIR</a>.</p>
+                    <p>Prior to Meta, I did my MS at <a href="https://www.cmu.edu/">CMU</a>.</p>
+                    <div class="contact-links">
+                        <a href="https://x.com/theruiwang">X</a> / 
+                        <a href="https://scholar.google.com/citations?hl=en&user=Ld3_8fYAAAAJ">Google Scholar</a> / 
+                        <a href="https://www.linkedin.com/in/rui-wang-66a988a0/">LinkedIn</a> / 
+                        <a href="mailto:theruiwang@gmail.com">Email</a>
+                    </div>
+                </div>
+
+                                <section id="papers">
+                    <h2 class="section-title">Publications</h2>
+                    <ul class="papers-list">
+                        <li class="paper-item">
+                            <div class="paper-date">2024 Oct</div>
+                            <div class="paper-title"><a href="https://arxiv.org/pdf/2410.04734">TLDR: Token-level Detective Reward Model for Large Vision Language Models</a></div>
+                        </li>
+                        <li class="paper-item">
+                            <div class="paper-date">2024 Jul</div>
+                            <div class="paper-title"><a href="https://arxiv.org/abs/2407.21783">The LLaMA 3 Herd of Models</a></div>
+                        </li>
+                        <li class="paper-item">
+                            <div class="paper-date">2023 Sep</div>
+                            <div class="paper-title"><a href="https://arxiv.org/pdf/2309.15807">EMU: Enhancing Image Generation Models Using Photogenic Needles in a Haystack</a></div>
+                        </li>
+                        <li class="paper-item">
+                            <div class="paper-date">2023 Jun</div>
+                            <div class="paper-title"><a href="https://openaccess.thecvf.com/content/CVPR2023/papers/Ramanathan_PACO_Parts_and_Attributes_of_Common_Objects_CVPR_2023_paper.pdf">PACO: Parts and Attributes of Common Objects</a></div>
+                        </li>
+                        <li class="paper-item">
+                            <div class="paper-date">2021 Oct</div>
+                            <div class="paper-title"><a href="https://openaccess.thecvf.com/content/ICCV2021/papers/Ramanathan_PreDet_Large-Scale_Weakly_Supervised_Pre-Training_for_Detection_ICCV_2021_paper.pdf">PreDet: Large-scale Weakly Supervised Pre-training for Detection</a></div>
+                        </li>
+                        <li class="paper-item">
+                            <div class="paper-date">2020 Jun</div>
+                            <div class="paper-title"><a href="https://openaccess.thecvf.com/content_CVPR_2020/papers/Ramanathan_DLWL_Improving_Detection_for_Lowshot_Classes_With_Weakly_Labelled_Data_CVPR_2020_paper.pdf">DLWL: Improving Detection for Lowshot Classes with Weakly Labelled Data</a></div>
+                        </li>
+                        <li class="paper-item">
+                            <div class="paper-date">2020 Aug</div>
+                            <div class="paper-title"><a href="https://arxiv.org/pdf/2008.05700">What Leads to Generalization of Object Proposals?</a></div>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
