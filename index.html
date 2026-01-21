@@ -80,7 +80,14 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-            gap: 120px;
+            gap: 40px;
+        }
+
+        .profile-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
         }
 
         .profile-photo {
@@ -93,7 +100,6 @@
             justify-content: center;
             font-size: 1.2em;
             color: #666;
-            flex-shrink: 0;
         }
 
         .bio {
@@ -102,19 +108,20 @@
 
         .bio p {
             margin-bottom: 25px;
-            font-size: 1.25em;
+            font-size: 1.15em;
             font-weight: 300;
         }
 
         .contact-links {
-            margin-top: 20px;
+            margin-top: 15px;
+            text-align: center;
         }
 
         .contact-links a {
             text-decoration: underline;
             color: #333;
-            margin-right: 15px;
-            font-size: 1.3em;
+            margin: 0 5px;
+            font-size: 1.1em;
         }
 
         .bio a {
@@ -171,6 +178,25 @@
             text-decoration: underline;
         }
 
+        .projects-list {
+            list-style: disc;
+            padding-left: 20px;
+            font-size: 1.1em;
+        }
+
+        .projects-list li {
+            margin-bottom: 10px;
+        }
+
+        .projects-list a {
+            color: #2c5aa0;
+            text-decoration: none;
+        }
+
+        .projects-list a:hover {
+            text-decoration: underline;
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -203,8 +229,16 @@
     
     <main>
         <section class="profile-section">
-            <div class="profile-photo">
-                <img src="assets/images/photo.jpg" alt="Rui Wang" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+            <div class="profile-left">
+                <div class="profile-photo">
+                    <img src="assets/images/photo.jpg" alt="Rui Wang" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                </div>
+                <div class="contact-links">
+                    <a href="https://x.com/theruiwang">X</a> /
+                    <a href="https://scholar.google.com/citations?hl=en&user=Ld3_8fYAAAAJ">Google Scholar</a> /
+                    <a href="https://www.linkedin.com/in/rui-wang-66a988a0/">LinkedIn</a> /
+                    <a href="mailto:theruiwang@gmail.com">Email</a>
+                </div>
             </div>
             <div class="content-wrapper">
                 <div class="bio">
@@ -215,12 +249,17 @@
                     <p>My research interest lies in multimodal large language models and agentic systems, with an emphasis on long-horizon tasks and reliable evaluation in real-world settings.</p>
                     <p>Previously, I led post-training for <a href="https://arxiv.org/abs/2407.21783">LLaMA 3</a> Multimodal on the LLaMA team at <a href="https://ai.meta.com/">Meta GenAI</a> and co-led <a href="https://arxiv.org/pdf/2309.15807">Emu</a>, Meta's text-to-image foundation model.</p>
                     <p>I received my MS from <a href="https://www.cmu.edu/">Carnegie Mellon University</a>.</p>
-                    <div class="contact-links">
-                        <a href="https://x.com/theruiwang">X</a> / 
-                        <a href="https://scholar.google.com/citations?hl=en&user=Ld3_8fYAAAAJ">Google Scholar</a> / 
-                        <a href="https://www.linkedin.com/in/rui-wang-66a988a0/">LinkedIn</a> / 
-                        <a href="mailto:theruiwang@gmail.com">Email</a>
-                    </div>
+                </div>
+                <div class="projects">
+                    <h2 class="section-title">Projects</h2>
+                    <ul class="projects-list">
+                        <li>
+                            <span style="color: #e74c3c;">(new!)</span> Yutori Navigator — <a href="https://yutori.com/blog/introducing-navigator">https://yutori.com/blog/introducing-navigator</a>
+                            <br><span style="color: #888; font-size: 0.9em; margin-left: 20px;">A computer-use agent ranked #1 on Online-Mind2Web.</span>
+                        </li>
+                        <li>LLaMA 3 — <a href="https://arxiv.org/abs/2407.21783">https://arxiv.org/abs/2407.21783</a></li>
+                        <li>Emu — <a href="https://arxiv.org/pdf/2309.15807">https://arxiv.org/pdf/2309.15807</a></li>
+                    </ul>
                 </div>
             </div>
         </section>
