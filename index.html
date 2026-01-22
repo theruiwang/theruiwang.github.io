@@ -47,6 +47,12 @@
             margin: 0 auto;
             padding: 20px;
             font-weight: 300;
+            opacity: 0;
+        }
+
+        body.fonts-loaded {
+            opacity: 1;
+            transition: opacity 0.1s ease-in;
         }
 
         .header {
@@ -403,5 +409,14 @@
             </div>
         </section>
     </main>
+    <script>
+        // Show page once fonts are loaded (or after timeout)
+        Promise.race([
+            document.fonts.ready,
+            new Promise(resolve => setTimeout(resolve, 1000))
+        ]).then(() => {
+            document.body.classList.add('fonts-loaded');
+        });
+    </script>
 </body>
 </html>
