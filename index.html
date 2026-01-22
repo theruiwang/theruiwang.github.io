@@ -212,24 +212,147 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
+        /* Scale down sizes on smaller screens while preserving desktop layout */
+        @media (max-width: 900px) {
+            .profile-photo {
+                width: 220px;
+                height: 220px;
+            }
+
+            .profile-section {
+                gap: 30px;
+            }
+
+            .bio p {
+                font-size: 1.05em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .name {
+                font-size: 1.8em;
             }
 
             .nav {
+                gap: 15px;
+            }
+
+            .nav a {
+                font-size: 1em;
+            }
+
+            .header {
+                margin-bottom: 25px;
+            }
+
+            .profile-photo {
+                width: 150px;
+                height: 150px;
+            }
+
+            .profile-section {
                 gap: 20px;
+            }
+
+            .bio p {
+                font-size: 0.95em;
+                margin-bottom: 18px;
+            }
+
+            .contact-links a {
+                font-size: 0.95em;
+            }
+
+            .section-title {
+                font-size: 1.4em;
+                margin-bottom: 20px;
+            }
+
+            .projects-list {
+                font-size: 0.95em;
+            }
+        }
+
+        /* iPhone optimization (iPhone 15/16 series: 390-430px viewport) */
+        @media (max-width: 430px) {
+            body {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 12px 0;
+                margin-bottom: 24px;
+            }
+
+            .name {
+                font-size: 1.6em;
+            }
+
+            .nav {
+                gap: 15px;
+            }
+
+            .nav a {
+                font-size: 0.95em;
             }
 
             .profile-section {
                 flex-direction: column;
-                text-align: center;
+                align-items: center;
+                gap: 24px;
+                margin-bottom: 30px;
+            }
+
+            .profile-left {
+                width: 100%;
             }
 
             .profile-photo {
-                align-self: center;
+                width: 150px;
+                height: 150px;
+                margin: 0 auto;
+            }
+
+            .contact-links {
+                margin-top: 12px;
+            }
+
+            .contact-links a {
+                font-size: 0.9em;
+            }
+
+            .content-wrapper {
+                gap: 30px;
+                width: 100%;
+            }
+
+            .bio p {
+                font-size: 1em;
+                margin-bottom: 16px;
+                line-height: 1.6;
+            }
+
+            .section-title {
+                font-size: 1.4em;
+                margin-bottom: 18px;
+            }
+
+            .projects-list {
+                font-size: 0.95em;
+                padding-left: 18px;
+            }
+
+            .projects-list li {
+                margin-bottom: 12px;
+                word-break: break-word;
+            }
+
+            .projects-list a {
+                word-break: break-all;
             }
         }
     </style>
