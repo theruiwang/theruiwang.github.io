@@ -43,9 +43,9 @@
             line-height: 1.6;
             color: #333;
             background-color: #fafafa;
-            max-width: 750px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 20px;
             opacity: 0;
         }
 
@@ -60,12 +60,12 @@
             align-items: center;
             padding: 20px 0;
             border-bottom: 1px solid #eee;
-            margin-bottom: 60px;
+            margin-bottom: 0;
         }
 
         .name {
             font-family: 'EB Garamond', 'Garamond', serif;
-            font-size: 2.5em;
+            font-size: 2.75em;
             font-weight: 300;
         }
 
@@ -82,12 +82,19 @@
         .nav a {
             text-decoration: none;
             color: #333;
-            font-size: 1.1em;
+            font-size: 1.2em;
             font-weight: 300;
         }
 
         .nav a:hover {
             text-decoration: underline;
+        }
+
+        .blog-container {
+            max-width: 750px;
+            padding-top: 30px;
+            margin: 0 auto;
+            margin-left: calc(50% - 400px);
         }
 
         .page-header {
@@ -96,7 +103,7 @@
 
         .page-title {
             font-family: 'EB Garamond', 'Garamond', serif;
-            font-size: 2.4em;
+            font-size: 2.65em;
             font-weight: 400;
             margin-bottom: 10px;
             color: #222;
@@ -104,7 +111,7 @@
 
         .page-tagline {
             font-family: 'EB Garamond', 'Garamond', serif;
-            font-size: 1.15em;
+            font-size: 1.25em;
             font-style: italic;
             color: #555;
         }
@@ -121,9 +128,9 @@
         }
 
         .blog-date {
-            font-size: 1.05em;
+            font-size: 1.25em;
             color: #666;
-            min-width: 100px;
+            min-width: 110px;
             flex-shrink: 0;
         }
 
@@ -133,7 +140,7 @@
 
         .blog-title {
             font-family: 'EB Garamond', 'Garamond', serif;
-            font-size: 1.25em;
+            font-size: 1.4em;
             font-weight: 500;
             margin-bottom: 4px;
             line-height: 1.3;
@@ -150,18 +157,23 @@
         }
 
         .blog-author {
-            font-size: 0.95em;
+            font-size: 1.05em;
             color: #777;
         }
 
         /* Responsive styles */
         @media (max-width: 600px) {
             body {
-                padding: 40px 20px;
+                padding: 15px;
+            }
+
+            .blog-container {
+                padding-top: 10px;
+                margin-left: 0;
             }
 
             .name {
-                font-size: 1.8em;
+                font-size: 2em;
             }
 
             .nav {
@@ -169,7 +181,7 @@
             }
 
             .nav a {
-                font-size: 1em;
+                font-size: 1.1em;
             }
 
             .header {
@@ -177,11 +189,11 @@
             }
 
             .page-title {
-                font-size: 2em;
+                font-size: 2.2em;
             }
 
             .page-tagline {
-                font-size: 1.05em;
+                font-size: 1.15em;
             }
 
             .blog-item {
@@ -195,22 +207,26 @@
             }
 
             .blog-title {
-                font-size: 1.15em;
+                font-size: 1.25em;
             }
         }
 
         @media (max-width: 430px) {
             body {
-                padding: 30px 16px;
+                padding: 16px;
+            }
+
+            .blog-container {
+                padding-top: 10px;
             }
 
             .header {
                 padding: 12px 0;
-                margin-bottom: 30px;
+                margin-bottom: 24px;
             }
 
             .name {
-                font-size: 1.6em;
+                font-size: 1.75em;
             }
 
             .nav {
@@ -218,7 +234,7 @@
             }
 
             .nav a {
-                font-size: 0.95em;
+                font-size: 1.05em;
             }
 
             .page-header {
@@ -226,7 +242,7 @@
             }
 
             .page-title {
-                font-size: 1.8em;
+                font-size: 2em;
             }
 
             .blog-item {
@@ -234,12 +250,12 @@
             }
 
             .blog-title {
-                font-size: 1.1em;
+                font-size: 1.2em;
             }
 
             .blog-date,
             .blog-author {
-                font-size: 0.9em;
+                font-size: 1em;
             }
         }
     </style>
@@ -254,13 +270,14 @@
         </nav>
     </header>
 
-    <header class="page-header">
-        <h1 class="page-title">Blog</h1>
-        <p class="page-tagline">Thoughts on AI research and building intelligent systems</p>
-    </header>
+    <div class="blog-container">
+        <header class="page-header">
+            <h1 class="page-title">Blog</h1>
+            <p class="page-tagline">Thoughts on AI research and building intelligent systems</p>
+        </header>
 
-    <main>
-        <ul class="blog-list">
+        <main>
+            <ul class="blog-list">
             <li class="blog-item">
                 <div class="blog-date">Jan 15, 2025</div>
                 <div class="blog-content">
@@ -290,8 +307,9 @@
                     <div class="blog-author">Rui Wang</div>
                 </div>
             </li>
-        </ul>
-    </main>
+            </ul>
+        </main>
+    </div>
 
     <script>
         // Show page once fonts are loaded (or after timeout)

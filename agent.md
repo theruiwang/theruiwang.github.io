@@ -18,7 +18,7 @@
 - Padding: `20px`
 
 ## Header (consistent across all pages)
-- Name "Rui Wang" on left (EB Garamond, 2.5em, weight 300)
+- Name "Rui Wang" on left (EB Garamond, 2.75em, weight 300)
 - Navigation on right: Home, Projects, Blog
 - Border bottom: `1px solid #eee`
 
