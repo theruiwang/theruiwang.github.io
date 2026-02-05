@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFVDXFM3G2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WFVDXFM3G2');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Vision-Language Models: A Deep Dive into Qwen3-VL — Rui Wang</title>
+    <meta name="description" content="A comprehensive guide to understanding Vision-Language Models through the lens of Qwen3-VL architecture.">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Understanding Vision-Language Models: A Deep Dive into Qwen3-VL">
+    <meta property="og:description" content="A comprehensive guide to understanding Vision-Language Models through the lens of Qwen3-VL architecture.">
+    <meta property="og:image" content="https://theruiwang.github.io/assets/images/photo.jpg">
+    <meta property="og:url" content="https://theruiwang.github.io/blog/understanding-vlm-qwen3-vl/">
+    <meta property="og:type" content="article">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Understanding Vision-Language Models: A Deep Dive into Qwen3-VL">
+    <meta name="twitter:description" content="A comprehensive guide to understanding Vision-Language Models through the lens of Qwen3-VL architecture.">
+    <meta name="twitter:image" content="https://theruiwang.github.io/assets/images/photo.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Marked.js for markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Highlight.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/python.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', 'Georgia', serif;
+            line-height: 1.7;
+            color: #333;
+            background-color: #fafafa;
+            opacity: 0;
+        }
+
+        body.fonts-loaded {
+            opacity: 1;
+            transition: opacity 0.1s ease-in;
+        }
+
+        .site-header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .name {
+            font-family: 'EB Garamond', 'Garamond', serif;
+            font-size: 2.75em;
+            font-weight: 300;
+        }
+
+        .name a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2em;
+            font-weight: 300;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .article-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Left sidebar - Table of Contents */
+        .toc-sidebar {
+            position: sticky;
+            top: 30px;
+            height: fit-content;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            padding-right: 20px;
+        }
+
+        .toc-sidebar h3 {
+            font-family: 'EB Garamond', 'Garamond', serif;
+            font-size: 1.1em;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .toc-sidebar ul {
+            list-style: none;
+        }
+
+        .toc-sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .toc-sidebar a {
+            color: #555;
+            text-decoration: none;
+            font-size: 0.95em;
+            line-height: 1.4;
+            display: block;
+        }
+
+        .toc-sidebar a:hover {
+            color: #2c5aa0;
+        }
+
+        .toc-sidebar a.active {
+            color: #2c5aa0;
+            font-weight: 500;
+        }
+
+        .toc-sidebar .toc-h1 {
+            padding-left: 0;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .toc-sidebar .toc-h1:first-child {
+            margin-top: 0;
+        }
+
+        .toc-sidebar .toc-h2 {
+            padding-left: 15px;
+            font-weight: 400;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .toc-sidebar .toc-h3 {
+            padding-left: 30px;
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        /* Main content */
+        .article-content {
+            max-width: 750px;
+            font-size: 1.15em;
+        }
+
+        .article-content h1 {
+            font-family: 'EB Garamond', 'Garamond', serif;
+            font-size: 2.2em;
+            font-weight: 400;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .article-meta {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1em;
+        }
+
+        .article-content h2 {
+            font-family: 'EB Garamond', 'Garamond', serif;
+            font-size: 1.6em;
+            font-weight: 500;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .article-content h3 {
+            font-family: 'EB Garamond', 'Garamond', serif;
+            font-size: 1.3em;
+            font-weight: 500;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .article-content h4 {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .article-content p {
+            margin-bottom: 20px;
+        }
+
+        .article-content a {
+            color: #2c5aa0;
+            text-decoration: none;
+        }
+
+        .article-content a:hover {
+            text-decoration: underline;
+        }
+
+        .article-content ul, .article-content ol {
+            margin-bottom: 20px;
+            padding-left: 25px;
+        }
+
+        .article-content li {
+            margin-bottom: 8px;
+        }
+
+        .article-content pre {
+            background: #f5f5f5;
+            padding: 16px 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.78em;
+            line-height: 1.5;
+        }
+
+        .article-content code {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.88em;
+        }
+
+        .article-content p code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* Bold text */
+        .article-content strong, .article-content b {
+            font-weight: 650;
+        }
+
+        /* Smaller math formulas */
+        .katex {
+            font-size: 1em;
+        }
+
+        .katex-display {
+            font-size: 0.95em;
+            margin: 20px 0;
+        }
+
+        .article-content blockquote {
+            border-left: 3px solid #ddd;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+        }
+
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .article-content th, .article-content td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .article-content th {
+            background: #f5f5f5;
+            font-weight: 500;
+        }
+
+        .article-content hr {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 40px 0;
+        }
+
+        .article-content details {
+            margin-bottom: 20px;
+        }
+
+        .article-content summary {
+            cursor: pointer;
+            color: #2c5aa0;
+        }
+
+        /* Right sidebar - Sidenotes */
+        .sidenotes-sidebar {
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .sidenote {
+            font-size: 0.8em;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            position: absolute;
+            width: 220px;
+        }
+
+        .sidenote a {
+            color: #2c5aa0;
+            text-decoration: none;
+        }
+
+        .sidenote a:hover {
+            text-decoration: underline;
+        }
+
+        .sidenote-number {
+            font-weight: 500;
+            color: #2c5aa0;
+            font-size: 0.85em;
+            vertical-align: super;
+        }
+
+        /* Reference links in text */
+        .ref-link {
+            color: #2c5aa0;
+            font-size: 0.85em;
+            vertical-align: super;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .ref-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .article-layout {
+                grid-template-columns: 200px 1fr;
+            }
+            .references-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .article-layout {
+                grid-template-columns: 1fr;
+            }
+            .toc-sidebar {
+                display: none;
+            }
+            .site-header {
+                padding: 15px;
+            }
+            .name {
+                font-size: 2em;
+            }
+            .nav {
+                gap: 15px;
+            }
+            .nav a {
+                font-size: 1.1em;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .site-header {
+                padding: 16px;
+            }
+            .name {
+                font-size: 1.75em;
+            }
+            .nav a {
+                font-size: 1.05em;
+            }
+            .article-content {
+                font-size: 1.05em;
+            }
+            .article-content h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="name"><a href="/">Rui Wang</a></h1>
+        <nav class="nav">
+            <a href="/">Home</a>
+            <a href="/#projects">Projects</a>
+            <a href="/blog/">Blog</a>
+        </nav>
+    </header>
+
+    <div class="article-layout">
+        <aside class="toc-sidebar">
+            <ul id="toc"></ul>
+        </aside>
+
+        <article class="article-content">
+            <div id="content"></div>
+        </article>
+
+        <aside class="sidenotes-sidebar" id="sidenotes">
+        </aside>
+    </div>
+
+    <script>
+        // Slugify function for header IDs
+        function slugify(text) {
+            return text.toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim();
+        }
+
+        // Markdown content will be loaded from the .md file
+        fetch('/blog/understanding-vlm-qwen3-vl/understand_vlm_qwen3-vl.md')
+            .then(response => response.text())
+            .then(markdown => {
+
+                // Extract references section into a map
+                const referencesMatch = markdown.match(/# References\n([\s\S]*?)(?:\n---|\n\*Tutorial|$)/);
+                const referencesMap = {};
+                if (referencesMatch) {
+                    const refText = referencesMatch[1];
+                    const refLines = refText.split('\n').filter(line => line.trim().startsWith('['));
+                    refLines.forEach(line => {
+                        const match = line.match(/\[(\d+)\]\s*(.*)/);
+                        if (match) {
+                            let text = match[2];
+                            // Convert URLs to links
+                            text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">link</a>');
+                            referencesMap[match[1]] = text;
+                        }
+                    });
+                }
+
+                // Remove Table of Contents section and References from main content
+                let cleanMarkdown = markdown
+                    .replace(/## Table of Contents[\s\S]*?(?=\n---\n)/, '')
+                    .replace(/# References[\s\S]*$/, '');
+
+                // Protect LaTeX from markdown parser (underscores get interpreted as italics)
+                const latexBlocks = [];
+                // First protect display math $$...$$
+                cleanMarkdown = cleanMarkdown.replace(/\$\$([\s\S]*?)\$\$/g, (match, content) => {
+                    latexBlocks.push({ type: 'display', content: content });
+                    return `%%LATEX_BLOCK_${latexBlocks.length - 1}%%`;
+                });
+                // Then protect inline math $...$
+                cleanMarkdown = cleanMarkdown.replace(/\$([^\$\n]+?)\$/g, (match, content) => {
+                    latexBlocks.push({ type: 'inline', content: content });
+                    return `%%LATEX_BLOCK_${latexBlocks.length - 1}%%`;
+                });
+
+                // Parse markdown
+                let html = marked.parse(cleanMarkdown);
+
+                // Restore LaTeX blocks
+                html = html.replace(/%%LATEX_BLOCK_(\d+)%%/g, (match, index) => {
+                    const block = latexBlocks[parseInt(index)];
+                    if (block.type === 'display') {
+                        return `$$${block.content}$$`;
+                    } else {
+                        return `$${block.content}$`;
+                    }
+                });
+
+                // Add content
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = html;
+
+                // Insert article meta after the first h1 (title)
+                const firstH1 = contentDiv.querySelector('h1');
+                if (firstH1) {
+                    const meta = document.createElement('div');
+                    meta.className = 'article-meta';
+                    meta.textContent = 'Rui Wang · January 2025';
+                    firstH1.after(meta);
+                }
+
+                // Add IDs to all headings
+                const allHeadings = contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                const headingIds = {};
+                allHeadings.forEach(heading => {
+                    const slug = slugify(heading.textContent);
+                    if (headingIds[slug]) {
+                        headingIds[slug]++;
+                        heading.id = `${slug}-${headingIds[slug]}`;
+                    } else {
+                        headingIds[slug] = 1;
+                        heading.id = slug;
+                    }
+                });
+
+                // Generate TOC from h1, h2, h3 headings (skip main title)
+                // Only show h3 for Part 2 to emphasize its depth
+                const tocHeadings = contentDiv.querySelectorAll('h1, h2, h3');
+                const tocList = document.getElementById('toc');
+                let isFirst = true;
+                let inPart2 = false;
+                tocHeadings.forEach(heading => {
+                    // Skip the very first h1 (main title)
+                    if (isFirst && heading.tagName === 'H1') {
+                        isFirst = false;
+                        return;
+                    }
+                    isFirst = false;
+
+                    // Track when we enter Part 2
+                    if (heading.tagName === 'H1' && heading.textContent.includes('Part 2')) {
+                        inPart2 = true;
+                    }
+
+                    // Skip h3 headings in Part 1
+                    if (heading.tagName === 'H3' && !inPart2) {
+                        return;
+                    }
+
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = '#' + heading.id;
+                    // Remove section numbers like "1.1", "2.3" and citations like [1], [5]
+                    let tocText = heading.textContent;
+                    tocText = tocText.replace(/^\d+\.\d*\s+/, ''); // Remove "1.1 ", "2.3 ", "2.0 " etc.
+                    tocText = tocText.replace(/\s*\[\d+(?:,\s*\d+)*\]\s*/g, ''); // Remove [1], [5, 6] etc.
+                    a.textContent = tocText;
+                    a.className = 'toc-' + heading.tagName.toLowerCase();
+                    li.appendChild(a);
+                    tocList.appendChild(li);
+                });
+
+                // Render math with KaTeX (wait for it to load if necessary)
+                function renderMath() {
+                    if (typeof renderMathInElement !== 'undefined') {
+                        renderMathInElement(contentDiv, {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false},
+                                {left: '\\[', right: '\\]', display: true},
+                                {left: '\\(', right: '\\)', display: false}
+                            ],
+                            throwOnError: false
+                        });
+                    } else {
+                        // KaTeX not loaded yet, retry shortly
+                        setTimeout(renderMath, 50);
+                    }
+                }
+                renderMath();
+
+                // Create sidenotes for references
+                const sidenotesDiv = document.getElementById('sidenotes');
+                const usedRefs = new Set();
+
+                // Helper to check if node is inside code/pre or headings
+                function shouldSkipNode(node) {
+                    let parent = node.parentNode;
+                    while (parent) {
+                        const tag = parent.tagName;
+                        if (tag === 'PRE' || tag === 'CODE' ||
+                            tag === 'H1' || tag === 'H2' || tag === 'H3' ||
+                            tag === 'H4' || tag === 'H5' || tag === 'H6') {
+                            return true;
+                        }
+                        parent = parent.parentNode;
+                    }
+                    return false;
+                }
+
+                // Find all reference citations in the text (not in code blocks or headings)
+                const walker = document.createTreeWalker(contentDiv, NodeFilter.SHOW_TEXT, null, false);
+                const textNodes = [];
+                while (walker.nextNode()) {
+                    if (walker.currentNode.textContent.match(/\[\d+\]/) && !shouldSkipNode(walker.currentNode)) {
+                        textNodes.push(walker.currentNode);
+                    }
+                }
+
+                textNodes.forEach(node => {
+                    const text = node.textContent;
+                    const parts = text.split(/(\[\d+\])/g);
+                    if (parts.length > 1) {
+                        const fragment = document.createDocumentFragment();
+                        parts.forEach(part => {
+                            const refMatch = part.match(/\[(\d+)\]/);
+                            if (refMatch) {
+                                const refNum = refMatch[1];
+                                // Only process if this is a valid reference (1-10)
+                                if (referencesMap[refNum]) {
+                                    const span = document.createElement('span');
+                                    span.className = 'ref-link';
+                                    span.textContent = `[${refNum}]`;
+                                    span.dataset.ref = refNum;
+                                    fragment.appendChild(span);
+
+                                    // Create sidenote if not already used
+                                    if (!usedRefs.has(refNum)) {
+                                        usedRefs.add(refNum);
+                                        const sidenote = document.createElement('div');
+                                        sidenote.className = 'sidenote';
+                                        sidenote.dataset.ref = refNum;
+                                        sidenote.innerHTML = `<span class="sidenote-number">${refNum}</span> ${referencesMap[refNum]}`;
+                                        sidenotesDiv.appendChild(sidenote);
+                                    }
+                                } else {
+                                    fragment.appendChild(document.createTextNode(part));
+                                }
+                            } else {
+                                fragment.appendChild(document.createTextNode(part));
+                            }
+                        });
+                        node.parentNode.replaceChild(fragment, node);
+                    }
+                });
+
+                // Position sidenotes next to their first reference
+                function positionSidenotes() {
+                    const sidenotesRect = sidenotesDiv.getBoundingClientRect();
+                    const articleLayout = document.querySelector('.article-layout');
+                    const layoutRect = articleLayout.getBoundingClientRect();
+
+                    document.querySelectorAll('.sidenote').forEach(sidenote => {
+                        const refNum = sidenote.dataset.ref;
+                        const refLink = document.querySelector(`.ref-link[data-ref="${refNum}"]`);
+                        if (refLink) {
+                            const refRect = refLink.getBoundingClientRect();
+                            // Calculate position relative to the article layout
+                            const topPos = refRect.top - layoutRect.top;
+                            sidenote.style.top = topPos + 'px';
+                        }
+                    });
+                }
+
+                // Position on load and resize
+                setTimeout(positionSidenotes, 200);
+                window.addEventListener('resize', positionSidenotes);
+
+                // Apply syntax highlighting only to code blocks with language specified
+                document.querySelectorAll('pre code').forEach((block) => {
+                    // Check if block has a language class (e.g., "language-python")
+                    const hasLanguage = Array.from(block.classList).some(c => c.startsWith('language-'));
+                    if (hasLanguage) {
+                        hljs.highlightElement(block);
+                    }
+                });
+
+                // Highlight active TOC item on scroll and keep it visible
+                const observerOptions = {
+                    rootMargin: '-20% 0px -70% 0px'
+                };
+                const tocSidebar = document.querySelector('.toc-sidebar');
+                const observer = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            document.querySelectorAll('.toc-sidebar a').forEach(a => a.classList.remove('active'));
+                            const activeLink = document.querySelector(`.toc-sidebar a[href="#${entry.target.id}"]`);
+                            if (activeLink) {
+                                activeLink.classList.add('active');
+                                // Scroll TOC to keep active item visible
+                                activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                            }
+                        }
+                    });
+                }, observerOptions);
+
+                tocHeadings.forEach(heading => observer.observe(heading));
+            })
+            .catch(err => {
+                console.error('Error loading markdown:', err);
+                document.getElementById('content').innerHTML = '<p>Error loading content. Please try refreshing.</p>';
+            });
+
+        // Font loading
+        Promise.race([
+            document.fonts.ready,
+            new Promise(resolve => setTimeout(resolve, 1000))
+        ]).then(() => {
+            document.body.classList.add('fonts-loaded');
+        });
+    </script>
+</body>
+</html>
