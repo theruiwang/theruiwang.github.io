@@ -829,3 +829,71 @@ The key insight: linear attention layers don't produce KV pairs — they maintai
 **What they share**: Both use the same GQA grouping ratio (4x), the same MLP structure (SwiGLU with 3x expansion), the same MRoPE interleaving scheme, QK-norm, and nearly identical vision encoders. The differences are in *how attention works*, not in the feedforward path.
 
 The hybrid approach in Qwen3.5 represents a bet that most layers don't need the full O(N^2) attention pattern — a fixed-size recurrent state is sufficient for most information routing, with periodic full-attention layers serving as precise retrieval checkpoints. Qwen3-VL instead bets on maximum expressivity at every layer, compensating for the higher per-layer cost with architectural features like DeepStack that make each layer's computation more visually grounded.
+
+---
+
+## Appendix: Why Is Qwen3.5-9B Larger Than Qwen3-VL-8B?
+
+At first glance, Qwen3.5 looks "smaller" in every way: fewer layers (32 vs 36), fewer attention heads (16Q/4KV vs 32Q/8KV), smaller vision output (3584 vs 4096). Yet it has **more** parameters. The explanation comes down to two things the summary table doesn't show: vocabulary size and the cost of linear attention modules.
+
+### Per-Layer Attention Parameters
+
+**Qwen3_5GatedDeltaNet** (linear attention, 24 layers):
+
+| Module | Dimensions | Params |
+|---|---|---|
+| `in_proj_qkv` | 4096 → 2048\*2 + 4096 = 8192 | 33.55M |
+| `in_proj_z` (gate) | 4096 → 4096 | 16.78M |
+| `in_proj_a` (decay) | 4096 → 32 | 0.13M |
+| `in_proj_b` (beta) | 4096 → 32 | 0.13M |
+| `conv1d` (depthwise, k=4) | 8192 channels | 0.03M |
+| `out_proj` | 4096 → 4096 | 16.78M |
+| **Total** | | **67.4M** |
+
+**Qwen3_5Attention** (full attention, 8 layers):
+
+| Module | Dimensions | Params |
+|---|---|---|
+| `q_proj` (2x for gate) | 4096 → 16\*256\*2 = 8192 | 33.55M |
+| `k_proj` | 4096 → 4\*256 = 1024 | 4.19M |
+| `v_proj` | 4096 → 4\*256 = 1024 | 4.19M |
+| `o_proj` | 4096 → 4096 | 16.78M |
+| **Total** | | **58.7M** |
+
+**Qwen3VLTextAttention** (36 layers):
+
+| Module | Dimensions | Params |
+|---|---|---|
+| `q_proj` | 4096 → 32\*128 = 4096 | 16.78M |
+| `k_proj` | 4096 → 8\*128 = 1024 | 4.19M |
+| `v_proj` | 4096 → 8\*128 = 1024 | 4.19M |
+| `o_proj` | 4096 → 4096 | 16.78M |
+| **Total** | | **41.9M** |
+
+The linear attention module is **60% heavier** than a standard attention layer (67.4M vs 41.9M), due to the extra gate projection (`in_proj_z`), the combined QKV projection being wider, and the decay/beta projections.
+
+### Full Parameter Budget
+
+Both models use `tie_word_embeddings=False`, so `embed_tokens` and `lm_head` are separate parameters.
+
+| Component | Qwen3.5-9B | Qwen3-VL-8B | Delta |
+|---|---|---|---|
+| **Embeddings** (vocab × 4096) | 248320 × 4096 = 1.02B | 151936 × 4096 = 0.62B | +0.39B |
+| **LM head** (4096 × vocab) | 248320 × 4096 = 1.02B | 151936 × 4096 = 0.62B | +0.39B |
+| **Attention** | 8×58.7M + 24×67.4M = 2.09B | 36×41.9M = 1.51B | +0.58B |
+| **MLP** (3 × 4096 × 12288/layer) | 32 × 150.99M = 4.83B | 36 × 150.99M = 5.44B | −0.60B |
+| **Vision encoder** (27 blocks) | ~0.45B (no DeepStack) | ~0.58B (+ 3 DeepStack mergers) | −0.12B |
+| **Norms, biases, etc.** | ~5M | ~5M | ~0 |
+| **Total** | **~9.4B** | **~8.8B** | **+~0.6B** |
+
+### The Three Drivers
+
+1. **Vocabulary: 248K vs 152K** — The 96K extra tokens cost ~790M params across embeddings + lm_head. This single factor accounts for most of the gap.
+
+2. **Linear attention overhead** — Each GatedDeltaNet layer (67.4M) is heavier than a standard attention layer (41.9M). The gate projection `in_proj_z` alone adds 16.8M per layer × 24 layers = 403M of "hidden" cost.
+
+3. **Gated q_proj** — The 8 full attention layers in Qwen3.5 double their q_proj output dimension for sigmoid gating (4096 → 8192 instead of → 4096), adding ~134M.
+
+These three factors contribute +1.36B, which more than offsets the 4 fewer MLP layers (−0.60B) and the simpler vision encoder (−0.12B), netting the ~0.6B difference.
+
+The takeaway: "9B vs 8B" is not about the decoder being bigger — it's largely about the vocabulary and the per-layer cost of the linear attention machinery that makes Qwen3.5's inference more efficient.
