@@ -46,7 +46,7 @@ The outer shell is identical: `visual` + `language_model` + `rope_deltas`. The d
 | **intermediate_size** | 12288 | 12288 |
 | **Query gating** | Yes (sigmoid) | No |
 | **Partial rotary** | 0.25 (64 of 256 dims rotated) | 1.0 (all 128 dims rotated) |
-| **RMSNorm** | 1-centered: `(1 + w) * norm(x)` | Standard: `w * norm(x)` |
+| **RMSNorm** | 1-centered: $(1 + \mathbf{w}) \cdot \mathrm{norm}(\mathbf{x})$ | Standard: $\mathbf{w} \cdot \mathrm{norm}(\mathbf{x})$ |
 | **DeepStack** | No | Yes (vision layers 8, 16, 24) |
 | **Vision out_hidden_size** | 3584 | 4096 |
 | **max_position_embeddings** | 32,768 | 262,144 |
@@ -93,7 +93,7 @@ class Qwen3VLTextMLP(nn.Module):
         return self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))
 ```
 
-The formula is: `output = down_proj(SiLU(gate_proj(x)) * up_proj(x))`. Structurally identical.
+The formula is: $\mathbf{y} = \mathbf{W}_{\mathrm{down}}\bigl(\mathrm{SiLU}(\mathbf{W}_{\mathrm{gate}}\, \mathbf{x}) \odot \mathbf{W}_{\mathrm{up}}\, \mathbf{x}\bigr)$. Structurally identical.
 
 ### 2.2 Vision Encoder
 
@@ -169,9 +169,38 @@ def apply_interleaved_mrope(self, freqs, mrope_section):
     return freqs_t
 ```
 
+#### How the Interleaving Works
+
+The input `freqs` has shape `(3, bs, seq_len, head_dim // 2)` — three separate frequency tensors for **T**emporal, **H**eight, and **W**idth axes. The `mrope_section` specifies how many frequency slots each axis gets. Let's trace through with Qwen3.5's config: `mrope_section = [11, 11, 10]`, which means `head_dim // 2 = 32` total frequency slots (since `partial_rotary_factor=0.25` gives 64 rotary dims → 32 frequency slots).
+
+**Step 1**: Start with `freqs_t = freqs[0]` — a copy of the full T (temporal) frequencies across all 32 slots:
+
+```
+Slot index: 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 ... 31
+freqs_t:    T  T  T  T  T  T  T  T  T  T  T  T  T  T  T ... T
+```
+
+**Step 2**: Process H (dim=1, offset=1). `length = mrope_section[1] * 3 = 11 * 3 = 33`, but capped at 32 since that's total slots. `idx = slice(1, 33, 3)` → slots `[1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31]` (11 slots). Overwrite these with H:
+
+```
+Slot index: 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 ... 31
+freqs_t:    T  H  T  T  H  T  T  H  T  T  H  T  T  H  T ... H
+```
+
+**Step 3**: Process W (dim=2, offset=2). `length = mrope_section[2] * 3 = 10 * 3 = 30`. `idx = slice(2, 30, 3)` → slots `[2, 5, 8, 11, 14, 17, 20, 23, 26, 29]` (10 slots). Overwrite these with W:
+
+```
+Slot index: 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 ... 29 30 31
+freqs_t:    T  H  W  T  H  W  T  H  W  T  H  W  T  H  W ... W  T  H
+```
+
+The result is an interleaved pattern `[T, H, W, T, H, W, ...]` with the remainder filled by T (since T was the initial base). The three axes share the frequency spectrum rather than each getting a contiguous block. This interleaving ensures each axis gets representation across both low and high frequencies — if they were chunked as `[TTT...HHH...WWW]`, the W axis would only get the highest frequencies, potentially losing coarse spatial information.
+
+For Qwen3-VL with `mrope_section = [24, 20, 20]` and 64 frequency slots (full 128 rotary dims), the same algorithm produces the same interleaved pattern, just spread over twice as many slots.
+
 ### 2.4 Other Shared Features
 
-- **Pre-norm architecture** with residual connections (`residual + attention(norm(x))`)
+- **Pre-norm architecture** with residual connections: $\mathbf{x} + \mathrm{Attn}\bigl(\mathrm{Norm}(\mathbf{x})\bigr)$
 - **QK-norm**: both apply RMSNorm per head dimension to queries and keys in text attention
 - **No bias** in text attention projections (`attention_bias=False`)
 
@@ -257,13 +286,13 @@ class Qwen3_5DecoderLayer(GradientCheckpointingLayer):
 
 To understand why Qwen3.5 makes this choice, a brief primer on linear attention:
 
-**Standard (full) attention** computes `softmax(QK^T / sqrt(d)) V` — this requires materializing the full N x N attention matrix, making both memory and compute O(N^2) in sequence length. During autoregressive decoding, you keep a growing KV cache that is O(N) per layer.
+**Standard (full) attention** computes $\mathrm{softmax}(\mathbf{Q}\mathbf{K}^\top / \sqrt{d})\, \mathbf{V}$ — this requires materializing the full $N \times N$ attention matrix, making both memory and compute $\mathcal{O}(N^2)$ in sequence length. During autoregressive decoding, you keep a growing KV cache that is $\mathcal{O}(N)$ per layer.
 
-**Linear attention** removes the softmax, reformulating attention as `phi(Q) (phi(K)^T V)`. The key insight is *associativity*: instead of computing `(QK^T)V` (N x N intermediate), you compute `Q(K^T V)` (d x d intermediate). This allows maintaining a fixed-size "recurrent state" matrix S of shape `(key_dim x value_dim)`, updated as `S_t = S_{t-1} + k_t v_t^T`, with output `o_t = q_t S_t`. Memory per token: O(1). No growing KV cache.
+**Linear attention** removes the softmax, reformulating attention as $\phi(\mathbf{Q})\,\bigl(\phi(\mathbf{K})^\top \mathbf{V}\bigr)$. The key insight is *associativity*: instead of computing $(\mathbf{Q}\mathbf{K}^\top)\mathbf{V}$ ($N \times N$ intermediate), you compute $\mathbf{Q}(\mathbf{K}^\top \mathbf{V})$ ($d \times d$ intermediate). This allows maintaining a fixed-size "recurrent state" matrix $\mathbf{S}$ of shape $(d_k \times d_v)$, updated as $\mathbf{S}_t = \mathbf{S}_{t-1} + \mathbf{k}_t \mathbf{v}_t^\top$, with output $\mathbf{o}_t = \mathbf{q}_t \mathbf{S}_t$. Memory per token: $\mathcal{O}(1)$. No growing KV cache.
 
 **The trade-off**: Removing softmax loses the sharp, selective attention patterns that full attention provides. The model can no longer "look up" specific tokens precisely — the recurrent state is a lossy compression of the past.
 
-**Hybrid approach** (what Qwen3.5 does): Use linear attention for most layers (cheap, O(1) state) but keep full attention every 4th layer (expensive, but preserves precise token lookup). This gives sub-quadratic overall cost while maintaining some full-attention "checkpoints" for precise retrieval.
+**Hybrid approach** (what Qwen3.5 does): Use linear attention for most layers (cheap, $\mathcal{O}(1)$ state) but keep full attention every 4th layer (expensive, but preserves precise token lookup). This gives sub-quadratic overall cost while maintaining some full-attention "checkpoints" for precise retrieval.
 
 ### 3c. Deep Dive: Qwen3_5GatedDeltaNet (The Linear Attention Module)
 
@@ -299,16 +328,14 @@ else:
 
 #### (ii) Gated Delta Rule — The Recurrence
 
-Instead of the naive `S += k v^T` (which would grow unboundedly), the delta rule updates as:
+Instead of the naive $\mathbf{S} \mathrel{+}= \mathbf{k}\mathbf{v}^\top$ (which would grow unboundedly), the delta rule updates as:
 
-```
-S_t = decay_t * S_{t-1} + k_t * (beta_t * (v_t - S_{t-1}^T k_t))^T
-```
+$$\mathbf{S}_t = \gamma_t \, \mathbf{S}_{t-1} + \mathbf{k}_t \bigl[\beta_t \bigl(\mathbf{v}_t - \mathbf{S}_{t-1}^\top \mathbf{k}_t\bigr)\bigr]^\top$$
 
 Where:
-- `decay_t = exp(-A * softplus(a_t + dt_bias))` — exponential forgetting (state decays over time)
-- `beta_t = sigmoid(b_t)` — controls how much of the "error" to write
-- The "delta" is `v_t - S^T k_t`: the difference between the desired value and what the state already predicts for this key — like a Hebbian/delta learning rule applied at each step
+- $\gamma_t = \exp\bigl(-A \cdot \mathrm{softplus}(a_t + b_{\mathrm{dt}})\bigr)$ — exponential forgetting (state decays over time)
+- $\beta_t = \sigma(b_t)$ — controls how much of the "error" to write
+- The "delta" is $\mathbf{v}_t - \mathbf{S}^\top \mathbf{k}_t$: the difference between the desired value and what the state already predicts for this key — like a Hebbian/delta learning rule applied at each step
 
 From the projections:
 
@@ -399,7 +426,7 @@ if self.num_v_heads // self.num_k_heads > 1:
     key = key.repeat_interleave(self.num_v_heads // self.num_k_heads, dim=2)
 ```
 
-Recurrent state shape per head: `(key_head_dim x value_head_dim)` = `(128 x 128)` = 16K floats — fixed regardless of sequence length.
+Recurrent state shape per head: $(d_k \times d_v) = (128 \times 128)$ = 16K floats — fixed regardless of sequence length.
 
 ---
 
@@ -556,7 +583,14 @@ class Qwen3VLTextRMSNorm(nn.Module):
         return self.weight * hidden_states.to(input_dtype)  # <-- standard
 ```
 
-Both are identity at initialization. The `(1 + w)` parameterization means gradients flow through the `+1` offset, which can stabilize training when the model needs the norm to stay close to identity. Different gradient dynamics during training, but mathematically equivalent at init.
+Both are identity at initialization ($1 \cdot \mathrm{norm}(\mathbf{x})$ either way). The difference shows up during training, primarily through **weight decay**.
+
+AdamW applies weight decay as $\mathbf{w} \leftarrow \mathbf{w} - \eta \lambda \mathbf{w}$, which pulls the weight toward zero. Consider what "toward zero" means for each parameterization:
+
+- **Standard** (Qwen3-VL): $\mathbf{w}$ starts at $\mathbf{1}$, weight decay pulls $\mathbf{w} \to \mathbf{0}$. The effective scale $\mathbf{w} \cdot \mathrm{norm}(\mathbf{x})$ shrinks toward **zero** — the layer's output vanishes. Weight decay is fighting against the layer doing anything at all.
+- **1-centered** (Qwen3.5): $\mathbf{w}$ starts at $\mathbf{0}$, weight decay pulls $\mathbf{w} \to \mathbf{0}$. The effective scale $(1 + \mathbf{w}) \cdot \mathrm{norm}(\mathbf{x})$ stays near **identity** — the layer passes its input through unchanged. Weight decay regularizes the layer toward being a no-op, which is a much more sensible prior.
+
+In other words, with standard parameterization, the optimizer has to spend capacity resisting weight decay just to keep the norm layer alive. With 1-centered parameterization, the "do nothing" equilibrium already preserves the signal, and the learned $\mathbf{w}$ values only need to encode *deviations* from identity scaling.
 
 ---
 
@@ -622,6 +656,8 @@ def apply_rotary_pos_emb(q, k, cos, sin, unsqueeze_dim=1):
     k_embed = (k * cos) + (rotate_half(k) * sin)
     return q_embed, k_embed
 ```
+
+**Partial rotary is new in Qwen3.5** — Qwen3-VL does not have it. As shown in the code above, Qwen3-VL's `compute_default_rope_parameters` uses `dim = head_dim` directly (all 128 dims), while Qwen3.5 introduces `partial_rotary_factor` to scale down the rotary dimension. Similarly, Qwen3-VL's `apply_rotary_pos_emb` rotates the full Q/K tensors, while Qwen3.5's version splits into `q_rot, q_pass` and only rotates the first part.
 
 **Why partial rotation?** In Qwen3.5's hybrid architecture, only 8 of 32 layers use full attention with position encoding. The 24 linear attention layers are position-free (no RoPE). By leaving 192 of 256 dims unrotated in the full attention layers, Qwen3.5 preserves position-agnostic content dimensions that are compatible with how linear attention processes information. The mrope_section also differs: `[11, 11, 10]` for Qwen3.5 vs `[24, 20, 20]` for Qwen3-VL, reflecting the different rotary dimensions available.
 
@@ -813,7 +849,7 @@ The key insight: linear attention layers don't produce KV pairs — they maintai
 ## 9. Synthesis & Design Philosophy
 
 **Qwen3.5** is **efficiency-oriented**:
-- Hybrid attention for sub-quadratic inference cost (24 of 32 layers use O(1) linear attention)
+- Hybrid attention for sub-quadratic inference cost (24 of 32 layers use $\mathcal{O}(1)$ linear attention)
 - Sigmoid gating on full attention output for selective information flow
 - Partial rotary encoding (only 25% of dims) to preserve position-agnostic content channels
 - No DeepStack — simpler vision-language fusion pipeline
@@ -828,7 +864,7 @@ The key insight: linear attention layers don't produce KV pairs — they maintai
 
 **What they share**: Both use the same GQA grouping ratio (4x), the same MLP structure (SwiGLU with 3x expansion), the same MRoPE interleaving scheme, QK-norm, and nearly identical vision encoders. The differences are in *how attention works*, not in the feedforward path.
 
-The hybrid approach in Qwen3.5 represents a bet that most layers don't need the full O(N^2) attention pattern — a fixed-size recurrent state is sufficient for most information routing, with periodic full-attention layers serving as precise retrieval checkpoints. Qwen3-VL instead bets on maximum expressivity at every layer, compensating for the higher per-layer cost with architectural features like DeepStack that make each layer's computation more visually grounded.
+The hybrid approach in Qwen3.5 represents a bet that most layers don't need the full $\mathcal{O}(N^2)$ attention pattern — a fixed-size recurrent state is sufficient for most information routing, with periodic full-attention layers serving as precise retrieval checkpoints. Qwen3-VL instead bets on maximum expressivity at every layer, compensating for the higher per-layer cost with architectural features like DeepStack that make each layer's computation more visually grounded.
 
 ---
 

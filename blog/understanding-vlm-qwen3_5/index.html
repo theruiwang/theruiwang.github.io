@@ -39,10 +39,9 @@
     <!-- Marked.js for markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <!-- Highlight.js for syntax highlighting -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
-    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/python.min.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
 
     <style>
         * {
@@ -55,7 +54,7 @@
             font-family: 'Crimson Text', 'Georgia', serif;
             line-height: 1.7;
             color: #333;
-            background-color: #fafafa;
+            background-color: #fff;
             opacity: 0;
         }
 
@@ -255,13 +254,19 @@
 
         .article-content code {
             font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-            font-size: 0.88em;
+            font-size: 0.7em;
+            background: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #FA7878;
         }
 
-        .article-content p code {
-            background: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 3px;
+        .article-content pre code {
+            font-size: 0.95em;
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            color: inherit;
         }
 
         /* Bold text */
@@ -412,6 +417,24 @@
                 font-size: 1.8em;
             }
         }
+
+        /* Glamour Light (charmbracelet/glamour) for Prism.js */
+        code[class*="language-"],
+        pre[class*="language-"] { color: #2A2A2A; }
+        .token.comment, .token.prolog, .token.doctype, .token.cdata { color: #8D8D8D; }
+        .token.keyword { color: #279EFC; }
+        .token.builtin { color: #0A1BB1; }
+        .token.boolean, .token.constant { color: #279EFC; }
+        .token.string, .token.attr-value { color: #7E5B38; }
+        .token.number { color: #22CCAE; }
+        .token.function { color: #019F57; }
+        .token.class-name { color: #212121; font-weight: bold; text-decoration: underline; }
+        .token.decorator, .token.annotation { color: #A3A322; }
+        .token.operator { color: #FF2626; }
+        .token.punctuation { color: #FA7878; }
+        .token.regex, .token.symbol { color: #7E5B38; }
+        .token.namespace { color: #2A2A2A; }
+        .token.variable { color: #2A2A2A; }
     </style>
 </head>
 <body>
@@ -527,18 +550,10 @@
                     }
                 });
 
-                // Generate TOC from h1, h2, h3 headings (skip main title)
-                const tocHeadings = contentDiv.querySelectorAll('h1, h2, h3');
+                // Generate TOC from h2 headings only (top level sections)
+                const tocHeadings = contentDiv.querySelectorAll('h2');
                 const tocList = document.getElementById('toc');
-                let isFirst = true;
                 tocHeadings.forEach(heading => {
-                    // Skip the very first h1 (main title)
-                    if (isFirst && heading.tagName === 'H1') {
-                        isFirst = false;
-                        return;
-                    }
-                    isFirst = false;
-
                     const li = document.createElement('li');
                     const a = document.createElement('a');
                     a.href = '#' + heading.id;
@@ -658,14 +673,8 @@
                 setTimeout(positionSidenotes, 200);
                 window.addEventListener('resize', positionSidenotes);
 
-                // Apply syntax highlighting only to code blocks with language specified
-                document.querySelectorAll('pre code').forEach((block) => {
-                    // Check if block has a language class (e.g., "language-python")
-                    const hasLanguage = Array.from(block.classList).some(c => c.startsWith('language-'));
-                    if (hasLanguage) {
-                        hljs.highlightElement(block);
-                    }
-                });
+                // Apply syntax highlighting to all code blocks (Prism.js)
+                Prism.highlightAll();
 
                 // Highlight active TOC item on scroll and keep it visible
                 const observerOptions = {
