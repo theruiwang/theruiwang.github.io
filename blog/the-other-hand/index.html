@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFVDXFM3G2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WFVDXFM3G2');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Other Hand — Rui Wang</title>
+    <meta name="description" content="Coding is one hand, computer use is the other.">
+
+    <meta property="og:title" content="The Other Hand">
+    <meta property="og:description" content="Coding is one hand, computer use is the other.">
+    <meta property="og:image" content="https://theruiwang.github.io/blog/the-other-hand/progress-in-computer-use.png">
+    <meta property="og:url" content="https://theruiwang.github.io/blog/the-other-hand/">
+    <meta property="og:type" content="article">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The Other Hand">
+    <meta name="twitter:description" content="Coding is one hand, computer use is the other.">
+    <meta name="twitter:image" content="https://theruiwang.github.io/blog/the-other-hand/progress-in-computer-use.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@300;400&family=Crimson+Text:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            color: #333;
+            background: #fafafa;
+            font-family: 'Crimson Text', Georgia, serif;
+            font-weight: 300;
+            line-height: 1.7;
+            opacity: 0;
+        }
+
+        body.fonts-loaded {
+            opacity: 1;
+            transition: opacity 0.1s ease-in;
+        }
+
+        .site-header {
+            width: calc(100% - 40px);
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .name {
+            font-family: 'EB Garamond', Garamond, serif;
+            font-size: 2.75em;
+            font-weight: 300;
+            line-height: 1.1;
+        }
+
+        .name a,
+        .nav a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav a {
+            font-size: 1.2em;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            text-decoration: underline;
+        }
+
+        article {
+            width: calc(100% - 40px);
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 72px 0 96px;
+            font-size: 1.2em;
+        }
+
+        h1,
+        h2 {
+            color: #222;
+            font-family: 'EB Garamond', Garamond, serif;
+        }
+
+        h1 {
+            margin-bottom: 4px;
+            font-size: 2.65em;
+            font-weight: 400;
+            line-height: 1.05;
+        }
+
+        h2 {
+            margin: 58px 0 20px;
+            font-size: 1.72em;
+            font-weight: 400;
+            line-height: 1.2;
+        }
+
+        p {
+            margin-bottom: 22px;
+        }
+
+        .tldr {
+            margin-bottom: 68px;
+            color: #555;
+            font-family: 'EB Garamond', Garamond, serif;
+            font-size: 1em;
+            font-weight: 300;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        a {
+            color: #2c5aa0;
+        }
+
+        figure {
+            margin: 40px 0;
+        }
+
+        figure img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        figcaption {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.88em;
+            font-style: italic;
+            line-height: 1.45;
+        }
+
+        @media (max-width: 600px) {
+            .site-header {
+                width: calc(100% - 30px);
+                padding: 14px 0;
+            }
+
+            .name {
+                font-size: 2em;
+            }
+
+            .nav {
+                gap: 15px;
+            }
+
+            .nav a {
+                font-size: 1.05em;
+            }
+
+            article {
+                width: calc(100% - 32px);
+                padding: 48px 0 72px;
+                font-size: 1.08em;
+            }
+
+            h1 {
+                font-size: 2.15em;
+            }
+
+            h2 {
+                margin-top: 46px;
+                font-size: 1.55em;
+            }
+
+            .tldr {
+                margin-bottom: 52px;
+            }
+
+            figure {
+                margin: 32px 0;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .name {
+                font-size: 1.75em;
+            }
+
+            article {
+                padding-top: 40px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="name"><a href="/">Rui Wang</a></div>
+        <nav class="nav">
+            <a href="/">Home</a>
+            <a href="/#projects">Projects</a>
+            <a class="active" href="/blog/">Blog</a>
+        </nav>
+    </header>
+
+    <main>
+        <article>
+            <h1>The Other Hand</h1>
+
+            <p class="tldr">tldr: Coding is one hand, computer use is the other.</p>
+
+            <h2>What progress actually looked like</h2>
+
+            <p>Two years ago, if you asked a model to pick your departure date, there was a good chance it would click a day early, a day late, or a month off. Sometimes it would, confidently, open the return-date picker. Basically, it was trying to make sure you never left the ground.</p>
+
+            <p>So the research started with the smallest useful unit of computer use: given an instruction and a screenshot, click the right thing. We first measured this across desktop, web, and mobile, then extended the same test to high-resolution professional software, where the target might be a tiny icon among dozens in a CAD toolbar. It was the right place to start. If the model can't click the right thing, nothing else matters.</p>
+
+            <p>Around the same time, we started testing complete tasks across desktop applications and the live web. An agent might need to find a setting buried several menus deep, gather information from a few websites and organize it in a spreadsheet, or find a hotel for four that meets several constraints and figure out the fastest route from there to the airport. Most of these take a person several to tens of minutes. The longest take hours, when there is a lot to search or a lot of repetitive work.</p>
+
+            <p>Clicking accurately was no longer enough. The agent had to carry the goal across many steps, remember what it found early and use it later, keep track of what was done and what wasn't, deal with slow or changing pages, pop-ups, and the occasional bot check, notice when an action failed and recover from it, verify that important actions such as purchases actually went through, and keep trying until the task was done.</p>
+
+            <figure>
+                <img src="progress-in-computer-use.png" alt="Progress in computer use since 2024 across ScreenSpot, ScreenSpot Pro, OSWorld, and Online Mind2Web">
+            </figure>
+
+            <p>For a while, the sentiment was that computer use was moving slowly. Within two years, these problems are effectively solved.</p>
+
+            <p>So what's left?</p>
+
+            <h2>The Other Hand</h2>
+
+            <p>The obvious answer is longer tasks. More steps, more hours. An agent that clicks for longer.</p>
+
+            <p>I think this is the wrong answer, because it assumes that the agent should do the task the way a human does it, through a screen.</p>
+
+            <p>But that is not the best way to get real work done. Think of a task like reviewing an insurance claim. An agent doing it well might pull the claim history with a database query, run the standard checks from the command line, flag any anomaly to a human reviewer through the case-management API, and push the approved claim through a legacy portal if no API is available. Code, CLI, API, and GUI, all in one task.</p>
+
+            <p><strong>The future is unified agents with two hands: coding is one, computer use is the other.</strong> Solving real work well often requires more than one interface, switching among them fluently and choosing the right one for each step.</p>
+
+            <p><strong>So GUI-only agents are over, but GUIs are not.</strong> Much software still has no API, and it will take a long time until it does (or never will). Until then, the GUI remains the generalization guarantee.</p>
+
+            <h2>Training both hands together</h2>
+
+            <p>It is not enough to optimize coding and computer use separately.</p>
+
+            <p>For a long time, that is how it was done. Not separate models, necessarily, but separate teams, separate data, separate action spaces, separate benchmarks. This worked. Most of what makes an agent good at long tasks transferred from coding to computer use, and I would guess general agent training and computer-use-specific work contributed about equally to where computer use is today.</p>
+
+            <p>What does not transfer is the switch. As soon as agents are measured on tasks where any interface is allowed, the errors show up. Some models keep coding when a short GUI path exists, just slightly hidden. Some click through hundreds of steps that a slightly creative script would have replaced. Some churn between interfaces without meaningful progress on either. <strong>They can code. They can click. They can't choose.</strong></p>
+
+            <p>Choosing has to be trained, and it can only be trained where it matters. If a task can be finished through one interface, the model learns nothing about when to reach for the other, no matter how many such tasks it sees. What we need are realistic knowledge-work environments that naturally require both hands.</p>
+
+            <p>That is the data. The rest is where computer use sits in the overall training stack. You have probably seen the GPT-6 Astra examples going around.</p>
+
+            <figure>
+                <img src="astra-palace-of-fine-arts-reconstruction.png" alt="Astra's Blender reconstruction of the Palace of Fine Arts">
+                <figcaption>Astra's Blender reconstruction of the Palace of Fine Arts. Source: <a href="https://x.com/sharifshameem/status/2095653641164329143">Sharif Shameem</a>.</figcaption>
+            </figure>
+
+            <p>OpenAI describes Astra as "big bets across pre-training, reinforcement learning, and alignment." Computer use has become a first-class training target, at least in some places. I believe it will soon be everywhere that is serious about it.</p>
+
+            <h2>Two frontiers</h2>
+
+            <p>Computer use will advance on two frontiers.</p>
+
+            <p>The first frontier is open-ended knowledge work. This is the obvious one. The hard part isn't compute, quality is. A valuable task has to teach the model to do the work at expert level, which means domain expertise throughout, from coming up with the task to verifying it. A good coding environment already sells for thousands to tens of thousands of dollars. Once training moves to realistic end-to-end knowledge work, I won't be surprised to see RL environments worth hundreds of thousands soon.</p>
+
+            <p>The second frontier is digital automation at scale. This one gets less attention. A large share of economically valuable digital work is small per task but enormous in volume: filing claims, pulling invoices from vendor portals, submitting compliance forms, validating promo codes, and moving data between systems that were never built to talk to each other. Each one is worth cents, and together they add up to a very large number. The need here is frontier-level performance at a cost that justifies the business. These small models have to be two-handed too. <strong>Once computer use stops being a test, what matters is getting the task done, by whatever means.</strong></p>
+
+            <h2>Where this goes</h2>
+
+            <p>Two more things follow.</p>
+
+            <p>Software will change. The browser already shows what agent-friendly software looks like: a GUI for humans, a DOM for structure, and JavaScript for programmatic control. The GUI is not the computer; it is one way to see it. New software will ship with both graphical and programmatic interfaces, and existing software will backfill the latter, likely slowly, because the alternative is being the app agents avoid.</p>
+
+            <p>And the loop closes. <strong>Computer-use training is itself a computer-use task.</strong> Models can be used throughout the training loop. During task creation, they interact with applications directly and find out what is actually possible. During verifier testing, their rollouts expose false positives, false negatives, and reward hacks that are hard to catch programmatically. After training, rollouts from the new model reveal new failure modes, which feed the next round of task generation. The model is no longer just the output of training. It is one of the inputs.</p>
+
+            <p>Two years ago, "computer use" named a research problem: can a model use computers like us. Now it can. That was a milestone, not the destination. A model does not need to use computers like us; it needs to use them better, with every interface a computer offers.</p>
+
+            <p>Along with coding, we have built the other hand.</p>
+
+            <p>Time to use both hands!</p>
+        </article>
+    </main>
+
+    <script>
+        Promise.race([
+            document.fonts.ready,
+            new Promise(resolve => setTimeout(resolve, 1000))
+        ]).then(() => {
+            document.body.classList.add('fonts-loaded');
+        });
+    </script>
+</body>
+</html>
