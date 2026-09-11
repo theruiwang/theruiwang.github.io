@@ -12,17 +12,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Other Hand — Rui Wang</title>
-    <meta name="description" content="GUI-only agents are over. GUIs are not. The future is an agent with two hands: coding is one, computer use is the other.">
+    <meta name="description" content="Computer use = coding + clicking.">
 
     <meta property="og:title" content="The Other Hand">
-    <meta property="og:description" content="GUI-only agents are over. GUIs are not. The future is an agent with two hands: coding is one, computer use is the other.">
+    <meta property="og:description" content="Computer use = coding + clicking.">
     <meta property="og:image" content="https://theruiwang.github.io/blog/the-other-hand/progress-in-computer-use.png">
     <meta property="og:url" content="https://theruiwang.github.io/blog/the-other-hand/">
     <meta property="og:type" content="article">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="The Other Hand">
-    <meta name="twitter:description" content="GUI-only agents are over. GUIs are not. The future is an agent with two hands: coding is one, computer use is the other.">
+    <meta name="twitter:description" content="Computer use = coding + clicking.">
     <meta name="twitter:image" content="https://theruiwang.github.io/blog/the-other-hand/progress-in-computer-use.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -109,14 +109,14 @@
         }
 
         h2 {
-            margin: 58px 0 20px;
+            margin: 40px 0 20px;
             font-size: 1.72em;
             font-weight: 400;
             line-height: 1.2;
         }
 
         p {
-            margin-bottom: 22px;
+            margin-bottom: 16px;
         }
 
         .tldr {
@@ -137,6 +137,12 @@
 
         figure {
             margin: 40px 0;
+        }
+
+        .banner {
+            width: min(960px, calc(100vw - 40px));
+            margin: 32px 0 48px 50%;
+            transform: translateX(-50%);
         }
 
         figure img {
@@ -182,7 +188,7 @@
             }
 
             h2 {
-                margin-top: 46px;
+                margin-top: 36px;
                 font-size: 1.55em;
             }
 
@@ -192,6 +198,11 @@
 
             figure {
                 margin: 32px 0;
+            }
+
+            .banner {
+                width: calc(100vw - 30px);
+                margin: 28px 0 38px 50%;
             }
         }
 
@@ -224,23 +235,35 @@
         <article>
             <h1>The Other Hand</h1>
 
-            <p class="tldr">tldr: GUI-only agents are over. GUIs are not. The future is an agent with two hands: coding is one, computer use is the other.</p>
+            <p class="tldr">tldr: Computer use = coding + clicking.</p>
 
-            <h2>What progress actually looked like</h2>
+            <figure class="banner">
+                <img src="the-other-hand-banner.png" alt="The Other Hand: Computer use, with both hands">
+            </figure>
+
+            <p>In 2024–25, people debated whether computer use would work.</p>
+
+            <p>In 2026, the question becomes: <strong>what is computer use, really?</strong></p>
+
+            <p>The answer starts with how we defined it. We began by teaching models to use computers like us: look at a screen, move a mouse, type on a keyboard. It was the natural place to start. It is, after all, how we use a computer.</p>
+
+            <p>But computer use has come a long way in two years. The definition now needs to catch up.</p>
+
+            <h2>What progress looked like</h2>
 
             <p>Two years ago, if you asked a model to pick your departure date, there was a good chance it would click a day early, a day late, or a month off. Sometimes it would, confidently, open the return-date picker. Basically, it was trying to make sure you never left the ground.</p>
 
-            <p>So the research started with the smallest useful unit of computer use: given an instruction and a screenshot, click the right thing. We first measured this across desktop, web, and mobile, then extended the same test to high-resolution professional software, where the target might be a tiny icon among dozens in a CAD toolbar. It was the right place to start. If the model can't click the right thing, nothing else matters.</p>
+            <p>The research started with the smallest useful unit of computer use: given an instruction and a screenshot, click the right thing. We first measured this across desktop, web, and mobile, then extended the same test to high-resolution professional software, where the target might be a tiny icon among dozens in a CAD toolbar. If the model can't click the right thing, nothing else matters.</p>
 
-            <p>Around the same time, we started testing complete tasks across desktop applications and the live web. An agent might need to find a setting buried several menus deep, gather information from a few websites and organize it in a spreadsheet, or find a hotel for four that meets several constraints and figure out the fastest route from there to the airport. Most of these take a person several to tens of minutes. The longest take hours, when there is a lot to search or a lot of repetitive work.</p>
+            <p>Around the same time, we started testing complete tasks across desktop applications and the live web. An agent might need to find a setting buried several menus deep, gather information from a few websites and organize it in a spreadsheet, or find a hotel for four that meets several constraints and figure out the fastest route from there to the airport.</p>
 
-            <p>Clicking accurately was no longer enough. The agent had to carry the goal across many steps, remember what it found early and use it later, keep track of what was done and what wasn't, deal with slow or changing pages, pop-ups, and the occasional bot check, notice when an action failed and recover from it, verify that important actions such as purchases actually went through, and keep trying until the task was done.</p>
+            <p>At this point, clicking accurately was no longer enough. The agent had to carry the goal across many steps, remember what it found early and use it later, keep track of what was done and what wasn't, deal with slow or changing pages, pop-ups, and the occasional bot check, notice when an action failed and recover from it, verify that important actions such as purchases actually went through, and keep trying until the task was done.</p>
 
             <figure>
                 <img src="progress-in-computer-use.png" alt="Progress in computer use since 2024 across ScreenSpot, ScreenSpot Pro, OSWorld, and Online Mind2Web">
             </figure>
 
-            <p>For a while, the sentiment was that computer use was moving slowly. Within two years, these problems are effectively solved.</p>
+            <p>For a while, the sentiment was that computer use was moving slowly. (AA, this is what happens when you don't give something a tab :) Now, GUI grounding is effectively solved, and so are tasks that take a person several to tens of minutes and sometimes stretch to a few hours.</p>
 
             <p>So what's left?</p>
 
@@ -250,25 +273,25 @@
 
             <p>I think this is the wrong answer, because it assumes that the agent should do the task the way a human does it, through a screen.</p>
 
-            <p>But that is not the best way to get real work done. Think of a task like reviewing an insurance claim. An agent doing it well might pull the claim history with a database query, run the standard checks from the command line, flag any anomaly to a human reviewer through the case-management API, and push the approved claim through a legacy portal if no API is available. Code, CLI, API, and GUI, all in one task.</p>
+            <p>But that is not always the best way to get real work done. Think about doing our taxes. An agent might pull transactions from several banks through their APIs, and when no API is available, download the forms and extract the numbers from PDFs. It might write a small script to categorize expenses and check the math, and then enter everything into tax software that only has a graphical interface. Code, APIs, and GUIs, all in one task. Remove any one of them, and the task becomes either unnecessarily slower or impossible to complete.</p>
 
-            <p><strong>The future is unified agents with two hands: coding is one, computer use is the other.</strong> Solving real work well often requires more than one interface, switching among them fluently and choosing the right one for each step.</p>
+            <p><strong>Computer use should mean the whole computer. Computer use = coding + clicking.</strong> Programmatic and graphical interfaces are both just ways to interact with a computer. In the example above, the agent called an API where one existed, wrote code where that was faster, and clicked where nothing else would work. The best way to use a computer is to use the best interface at each step, and to switch between them seamlessly. <strong>Think of it as two hands: coding is one, clicking is the other.</strong></p>
 
-            <p><strong>So GUI-only agents are over, but GUIs are not.</strong> Much software still has no API, and it will take a long time until it does (or never will). Until then, the GUI remains the generalization guarantee.</p>
+            <p>If that is what computer use means, <strong>GUI-only agents are over.</strong> They do everything the slow way. But moving away from GUI-only agents does not mean moving away from the GUI. <strong>Clicking still matters.</strong> The tax software in this example is not unusual. Much of the software we use still has no API, and some of it may never have one. Until that changes, the GUI remains the generalization guarantee: if a person can use the software, an agent can at least use it the same way.</p>
 
             <h2>Training both hands together</h2>
 
-            <p>It is not enough to optimize coding and computer use separately.</p>
+            <p>So we merge the coding and clicking data, and we're done?</p>
 
-            <p>For a long time, that is how it was done. Not separate models, necessarily, but separate teams, separate data, separate action spaces, separate benchmarks. This worked. Most of what makes an agent good at long tasks transferred from coding to computer use, and I would guess general agent training and computer-use-specific work contributed about equally to where computer use is today.</p>
+            <p>No.</p>
+
+            <p>For a while, coding and "computer use" were optimized separately. Not separate models, necessarily, but separate teams, separate data, separate action spaces. This worked. Most of what makes an agent good at long tasks transferred from coding to clicking, and I would guess general agent training and GUI-specific work contributed about equally to where "computer use" is today.</p>
 
             <p>What does not transfer is the switch. As soon as agents are measured on tasks where any interface is allowed, the errors show up. Some models keep coding when a short GUI path exists, just slightly hidden. Some click through hundreds of steps that a slightly creative script would have replaced. Some churn between interfaces without meaningful progress on either. <strong>They can code. They can click. They can't choose.</strong></p>
 
-            <p>Choosing has to be trained, and it can only be trained where it matters. If a task can be finished through one interface, the model learns nothing about when to reach for the other, no matter how many such tasks it sees. What we need are realistic knowledge-work environments that naturally require both hands.</p>
+            <p>Choosing has to be trained, and it can only be trained where it matters. If a task can be finished through one interface, the model learns nothing about when to reach for the other, no matter how many such tasks it sees. What we need are realistic environments that naturally require both hands (luckily, much of knowledge work is of this flavor).</p>
 
-            <p>That is the data. The rest is where computer use sits in the overall training stack. You have probably seen the GPT-6 Astra examples going around.</p>
-
-            <p>OpenAI describes Astra as "big bets across pre-training, reinforcement learning, and alignment." <strong>Computer use has become a first-class training target</strong>, at least in some places. I believe it will soon be everywhere that is serious about it.</p>
+            <p><strong>Besides data, we want to treat computer use (not just clicking) as a first-class training target.</strong> GPT-6 Astra is an example. OpenAI describes it as "big bets across pre-training, reinforcement learning, and alignment." And the outcome is obvious.</p>
 
             <figure>
                 <img src="astra-palace-of-fine-arts-reconstruction.png" alt="Astra's Blender reconstruction of the Palace of Fine Arts">
@@ -279,23 +302,27 @@
 
             <p>Computer use will advance on two frontiers.</p>
 
-            <p>The first frontier is open-ended knowledge work. This is the obvious one. The hard part isn't compute, quality is. A valuable task has to teach the model to do the work at expert level, which means domain expertise throughout, from coming up with the task to verifying it. A good coding environment already sells for thousands to tens of thousands of dollars. Once training moves to realistic end-to-end knowledge work, I won't be surprised to see RL environments worth hundreds of thousands soon.</p>
+            <p><strong>The first frontier is open-ended knowledge work.</strong> This is the obvious one. The hard part isn't compute, quality is. A valuable task has to teach the model to do the work at expert level, which means domain expertise throughout, from coming up with the task to verifying it. A good coding environment already sells for thousands to tens of thousands of dollars. Once training moves to realistic end-to-end knowledge work, I won't be surprised to see RL environments worth hundreds of thousands pretty soon.</p>
 
-            <p>The second frontier is digital automation at scale. This one gets less attention. A large share of economically valuable digital work is small per task but enormous in volume: filing claims, pulling invoices from vendor portals, submitting compliance forms, validating promo codes, and moving data between systems that were never built to talk to each other. Each one is worth cents, and together they add up to a very large number. The need here is frontier-level performance at a cost that justifies the business. These small models have to be two-handed too. <strong>Once computer use stops being a test, what matters is getting the task done, by whatever means.</strong></p>
+            <p><strong>The second frontier is digital automation at scale.</strong> It gets less attention than it should. Much economically valuable digital work takes the form of small tasks repeated at enormous scale, with inputs that vary too much for scripting. Think of validating promo codes across O(10k) websites. Similar tasks exist across healthcare, insurance, finance, consulting, and other industries. Each task may be worth only cents, but together they add up to a very large number. The need here is frontier-level performance, at a cost that justifies the business.</p>
 
             <h2>Where this goes</h2>
 
             <p>Two more things follow.</p>
 
-            <p>Software will change. The browser already shows what agent-friendly software looks like: a GUI for humans, a DOM for structure, and JavaScript for programmatic control. The GUI is not the computer; it is one way to see it. New software will ship with both graphical and programmatic interfaces, and existing software will backfill the latter, likely slowly, because the alternative is being the app agents avoid.</p>
+            <p>Software will change too. The browser already shows what agent-friendly software looks like: a GUI for humans, a DOM for structure, and JavaScript for programmatic control. New software will increasingly ship with both graphical and programmatic interfaces, while existing software will add the latter over time, probably slowly. <strong>So models will still need to click, and should be taught to click even better.</strong></p>
 
-            <p>And the loop closes. <strong>Computer-use training is itself a computer-use task.</strong> Models can be used throughout the training loop. During task creation, they interact with applications directly and find out what is actually possible. During verifier testing, their rollouts expose false positives, false negatives, and reward hacks that are hard to catch programmatically. After training, rollouts from the new model reveal new failure modes, which feed the next round of task generation. The model is no longer just the output of training. It is one of the inputs.</p>
+            <p>And the loop closes. <strong>Training for computer use is itself a computer-use task.</strong> Models are already used throughout the training loop. During task creation, they interact with applications directly and find out what is actually possible. During verifier testing, their rollouts expose false positives, false negatives, and reward hacks that are hard to catch programmatically. After training, rollouts from the new model reveal new failure modes, which feed the next round of task generation. The model is no longer just the output of training. It is one of the inputs.</p>
 
-            <p>Two years ago, "computer use" named a research problem: can a model use computers like us. Now it can. That was a milestone, not the destination. A model does not need to use computers like us; it needs to use them better, with every interface a computer offers.</p>
+            <h2>End</h2>
 
-            <p>Alongside coding, we have built the other hand.</p>
+            <p>Two years ago, "computer use" named a research problem: can a model use a computer like us, through the screen? Now it can. That was a milestone, not the destination.</p>
 
-            <p>Time to train both hands to work well together.</p>
+            <p>A computer offers much more than its screen. <strong>Using a computer should mean using all of it.</strong></p>
+
+            <p>Coding is one hand. What we used to call "computer use" is the other.</p>
+
+            <p>From now on, computer use means both.</p>
         </article>
     </main>
 
