@@ -11,6 +11,12 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      if (window.location.protocol !== 'file:' && window.location.pathname.endsWith('/index.html')) {
+        const cleanPath = window.location.pathname.slice(0, -'index.html'.length);
+        window.history.replaceState(null, '', cleanPath + window.location.search + window.location.hash);
+      }
+    </script>
     <title>Understanding Vision-Language Models: A Deep Dive into Qwen3-VL — Rui Wang</title>
     <meta name="description" content="A comprehensive guide to understanding Vision-Language Models through the lens of Qwen3-VL architecture.">
 
