@@ -56,44 +56,6 @@
             transition: opacity 0.1s ease-in;
         }
 
-        .site-header {
-            width: calc(100% - 40px);
-            max-width: 1160px;
-            margin: 0 auto;
-            padding: 20px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-        }
-
-        .name {
-            font-family: 'EB Garamond', Garamond, serif;
-            font-size: 40px;
-            font-weight: 400;
-            line-height: 1.1;
-        }
-
-        .name a,
-        .nav a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .nav {
-            display: flex;
-            gap: 30px;
-        }
-
-        .nav a {
-            font-size: 18px;
-        }
-
-        .nav a:hover,
-        .nav a.active {
-            text-decoration: underline;
-        }
-
         article {
             width: calc(100% - 40px);
             max-width: 760px;
@@ -114,6 +76,28 @@
             font-size: 42px;
             font-weight: 400;
             line-height: 1.05;
+        }
+
+        .article-header {
+            text-align: center;
+        }
+
+        .article-meta {
+            margin: 12px 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .article-author {
+            display: block;
+            color: #06c;
+            font-size: 18px;
+            line-height: 1.35;
+        }
+
+        .article-date {
+            display: block;
+            margin-top: 3px;
         }
 
         h2 {
@@ -139,7 +123,7 @@
         }
 
         .tldr {
-            margin-bottom: 36px;
+            margin: 0 0 36px;
             color: #555;
             font-family: 'Inter', Arial, sans-serif;
             font-size: 15px;
@@ -160,7 +144,7 @@
 
         .banner {
             width: min(960px, calc(100vw - 40px));
-            margin: 32px 0 48px 50%;
+            margin: 32px 0 18px 50%;
             transform: translateX(-50%);
         }
 
@@ -179,23 +163,6 @@
         }
 
         @media (max-width: 600px) {
-            .site-header {
-                width: calc(100% - 30px);
-                padding: 14px 0;
-            }
-
-            .name {
-                font-size: 32px;
-            }
-
-            .nav {
-                gap: 15px;
-            }
-
-            .nav a {
-                font-size: 17px;
-            }
-
             article {
                 width: calc(100% - 32px);
                 padding: 48px 0 72px;
@@ -221,15 +188,11 @@
 
             .banner {
                 width: calc(100vw - 30px);
-                margin: 28px 0 38px 50%;
+                margin: 28px 0 16px 50%;
             }
         }
 
         @media (max-width: 430px) {
-            .name {
-                font-size: 28px;
-            }
-
             article {
                 padding-top: 40px;
             }
@@ -241,24 +204,21 @@
     </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="name"><a href="/">Rui Wang</a></div>
-        <nav class="nav">
-            <a href="/">Home</a>
-            <a href="/#projects">Projects</a>
-            <a class="active" href="/blog/">Blog</a>
-        </nav>
-    </header>
-
     <main>
         <article>
-            <h1>The Other Hand</h1>
-
-            <p class="tldr">tldr: Computer use = coding + clicking</p>
+            <header class="article-header">
+                <h1>The Other Hand</h1>
+                <p class="article-meta">
+                    <a class="article-author" href="/">Rui Wang</a>
+                    <time class="article-date" datetime="2026-09-08">September 8, 2026</time>
+                </p>
+            </header>
 
             <figure class="banner">
                 <img src="the-other-hand-banner-2026.png" alt="The Other Hand: What's computer use in 2026, really, and what's next?">
             </figure>
+
+            <p class="tldr">tldr: Computer use = coding + clicking</p>
 
             <p>In 2024–25, people debated whether computer use would work.</p>
 

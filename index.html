@@ -63,9 +63,6 @@
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 20px 0;
             border-bottom: 1px solid #eee;
             margin-bottom: 40px;
@@ -75,26 +72,6 @@
             font-family: 'EB Garamond', Garamond, serif;
             font-size: 40px;
             font-weight: 400;
-        }
-
-        .nav {
-            display: flex;
-            gap: 30px;
-        }
-
-        .nav a {
-            text-decoration: none;
-            color: #333;
-            font-size: 18px;
-            font-weight: 400;
-        }
-
-        .nav a:hover {
-            text-decoration: underline;
-        }
-
-        .nav a.active {
-            text-decoration: underline;
         }
 
         .profile-section {
@@ -238,6 +215,13 @@
             text-decoration: underline;
         }
 
+        .blog-subtitle {
+            display: block;
+            margin-top: 2px;
+            color: #666;
+            font-size: 14px;
+        }
+
         /* Scale down sizes on smaller screens while preserving desktop layout */
         @media (max-width: 900px) {
             .profile-photo {
@@ -261,14 +245,6 @@
 
             .name {
                 font-size: 32px;
-            }
-
-            .nav {
-                gap: 15px;
-            }
-
-            .nav a {
-                font-size: 17px;
             }
 
             .header {
@@ -316,14 +292,6 @@
 
             .name {
                 font-size: 28px;
-            }
-
-            .nav {
-                gap: 15px;
-            }
-
-            .nav a {
-                font-size: 17px;
             }
 
             .profile-section {
@@ -390,11 +358,6 @@
 <body>
     <header class="header">
         <h1 class="name">Rui Wang</h1>
-        <nav class="nav">
-            <a href="#">Home</a>
-            <a href="#projects">Projects</a>
-            <a href="/blog/">Blog</a>
-        </nav>
     </header>
     
     <main>
@@ -423,6 +386,18 @@
                     <p>Please feel free to reach out if you're excited about this direction.</p>
 
                 </div>
+                <section class="blog-section" id="blog">
+                    <h2 class="section-title">Blog</h2>
+                    <ul class="projects-list">
+                        <li>
+                            <span class="year">2026 Sep</span>
+                            <span>
+                                <a href="/blog/the-other-hand/">The Other Hand</a>
+                                <span class="blog-subtitle">What's computer use in 2026?</span>
+                            </span>
+                        </li>
+                    </ul>
+                </section>
                 <div class="projects" id="projects">
                     <h2 class="section-title">Selected Projects</h2>
                     <ul class="projects-list">
